@@ -43,7 +43,7 @@ homicides_map_omaha <- homicides %>%
 
 #Importing ZIP code boundaries:
 
-omaha_zip_codes <- tigris::zctas(starts_with = c("681"), tigris_use_cache = TRUE) %>%
+omaha_zip_codes <- tigris::zctas(starts_with = c("681")) %>%
   st_as_sf(omaha_zip_codes) %>% st_set_crs(4269) #All Omaha zip codes start with 681, but this also brings in a few non-Omaha zip codes to the south; wonder if it takes a vector instead?
 
 ```

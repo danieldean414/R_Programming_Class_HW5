@@ -23,6 +23,16 @@ homicides <- read_csv("https://raw.githubusercontent.com/washingtonpost/data-hom
                Unsolved = c("Closed without arrest","Open/No arrest")
                ))
 
+homicides_map_omaha <- homicides %>%
+  filter(city == "Omaha") %>%
+  mutate(victim_race = fct_lump(victim_race, n=4, other_level = "Other")) %>%
+  st_as_sf(coords = c("lon","lat")) %>%
+  st_set_crs(4269)
+
+omaha_zip_codes <- tigris::zctas(starts_with = c("681"), tigris_cache_dir("data/")) %>%
+  st_as_sf(omaha_zip_codes) %>% st_set_crs(4269) 
+
+#All Omaha zip codes start with 681, but this also brings in a few non-Omaha zip codes to the south
 
   
   

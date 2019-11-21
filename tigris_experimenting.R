@@ -89,12 +89,29 @@ ggplot() +
                                 shape = disposition)) + 
   scale_color_viridis(name = "Month") 
 
+library(plotly)
 ggplot() + 
   geom_sf(data = omaha_zip_codes_sf) + 
   geom_sf(data = homicides_map_omaha, aes(fill = victim_race, color = victim_race)) +
   facet_wrap(.~disposition) +
   labs(title = "Omaha, NE (2007-2015) Homicides", subtitle = "Outcome and Location", color = "Race of Victim", xlab = "Longitude", ylab = "Latitude") +
   theme_tufte()
+  
+ggplotly(ggplot() + 
+           geom_sf(data = omaha_zip_codes_sf) + 
+           geom_sf(data = homicides_map_omaha, aes(fill = victim_race, color = victim_race, frame = year(reported_date))) +
+           facet_wrap(.~disposition) +
+           labs(title = "Omaha, NE (2007-2015) Homicides", subtitle = "Outcome and Location", color = "Race of Victim", xlab = "Longitude", ylab = "Latitude") +
+           theme_tufte())
+
+ggplot() + 
+  geom_sf(data = omaha_zip_codes_sf) + 
+  geom_sf(data = homicides_map_omaha, aes(fill = victim_race, color = victim_race)) +
+  facet_wrap(.~disposition) +
+  labs(title = "Omaha, NE (2007-2015) Homicides", subtitle = "Outcome and Location", color = "Race of Victim", xlab = "Longitude", ylab = "Latitude") +
+  theme_tufte()
+
+
 
 
 ggplot() + 
@@ -107,11 +124,23 @@ ggplot() +
 
 
 
-
-omaha_roads <- roads("NE","Douglas") %>% st_as_sf()
+omaha_tracts <- tracts("NE", county = "Douglas") %>% st_as_sf() %>%  st_set_crs(4269)
+omaha_roads <- roads("NE","Douglas") %>% st_as_sf() %>% 
 
 #omaha_blocks <- block_groups("NE", county = c("Douglas","Sarpy"))
 
+ggplot() +
+  geom_sf(omaha_tracts, aes(fill = 'goldenrod'))
+
+
+ggplot() + 
+  geom_sf(data = omaha_tracts) + 
+  geom_sf(data = homicides_map_omaha, aes(fill = victim_race), shape = 23, color = 'white') +
+  facet_wrap(.~disposition, nrow = 2) +
+  scale_fill_viridis_d() +
+  labs(title = "Omaha, NE (2007-2015) Homicides", subtitle = "Outcome and Location", color = "Race of Victim", xlab = "Longitude", ylab = "Latitude") +
+  theme_tufte()
+
 
 ggplot() + 
   geom_sf(data = omaha_zip_codes_sf) + 
@@ -120,6 +149,8 @@ ggplot() +
   facet_wrap(.~disposition) +
   labs(title = "Omaha, NE (2007-2015) Homicides", subtitle = "Outcome and Location", color = "Race of Victim", xlab = "Longitude", ylab = "Latitude") +
   theme_tufte()
+
+#41.26479° N, -95.94922° E
 
 
 #census data via API:
