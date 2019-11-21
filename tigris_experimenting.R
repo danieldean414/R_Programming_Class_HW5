@@ -1,6 +1,6 @@
 # tigris testing (probably delete eventually; plan to be pasting/running demos) 
-  #1: loosely following https://www.computerworld.com/article/3175623/mapping-in-r-just-got-a-whole-lot-easier.html
-
+  #beyond class notes, loosely following https://www.computerworld.com/article/3175623/mapping-in-r-just-got-a-whole-lot-easier.html
+  #https://andrewbtran.github.io/NICAR/2019/mapping/01_maps_slides.html#/the-plan
 
 us_geo <- states(class = "sf")
 #wagemap <- append_data(us_geo, wages, key.shp = "NAME", key.data = "State")
@@ -25,6 +25,7 @@ plot(austin_roads)
 #install.packages("tmap")
 library(tmap)
 tm_shape(austin_roads)
+
 
 chi_counties <- c("Cook", "DeKalb", "DuPage", "Grundy", "Lake", 
                   "Kane", "Kendall", "McHenry", "Will County")
@@ -94,4 +95,46 @@ ggplot() +
   facet_wrap(.~disposition) +
   labs(title = "Omaha, NE (2007-2015) Homicides", subtitle = "Outcome and Location", color = "Race of Victim", xlab = "Longitude", ylab = "Latitude") +
   theme_tufte()
-  
+
+
+ggplot() + 
+  geom_sf(data = omaha_zip_codes_sf) + 
+  geom_sf(data = omaha_roads) +
+  geom_sf(data = homicides_map_omaha, aes(fill = victim_race, color = victim_race)) +
+  facet_wrap(.~disposition) +
+  labs(title = "Omaha, NE (2007-2015) Homicides", subtitle = "Outcome and Location", color = "Race of Victim", xlab = "Longitude", ylab = "Latitude") +
+  theme_tufte()
+
+
+
+
+omaha_roads <- roads("NE","Douglas") %>% st_as_sf()
+
+#omaha_blocks <- block_groups("NE", county = c("Douglas","Sarpy"))
+
+
+ggplot() + 
+  geom_sf(data = omaha_zip_codes_sf) + 
+  geom_sf(data = omaha_roads) +
+  geom_sf(data = homicides_map_omaha, aes(fill = victim_race, color = victim_race)) +
+  facet_wrap(.~disposition) +
+  labs(title = "Omaha, NE (2007-2015) Homicides", subtitle = "Outcome and Location", color = "Race of Victim", xlab = "Longitude", ylab = "Latitude") +
+  theme_tufte()
+
+
+#census data via API:
+#following https://andrewbtran.github.io/NICAR/2019/mapping/01_maps_slides.html#/look-up-census-tables
+
+#install.packages("censusapi")
+library(censusapi)
+# Add key to .Renviron
+Sys.setenv(CENSUS_KEY="3bbdb6839b0c350b37e25cd856ca8517ec3cd7e7")
+# Reload .Renviron
+readRenviron("~/.Renviron")
+# Check to see that the expected key is output in your R console
+Sys.getenv("CENSUS_KEY")
+apis <- listCensusApis()
+apis$description
+
+apis %>%
+  filter(str_detect(description, "[I|i]ncome"))
