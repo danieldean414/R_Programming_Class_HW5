@@ -12,8 +12,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE)
 # Files in directory:
 
 ```{r listing files}
-list.files(".") #Not sure if this is right; seems like I'd either want to find an option to list contents of subdirectories, or to move everything into one folder. The latter doesn't seem bad with only one input file (so far)
-
+list.files(".", recursive = TRUE) 
 ```
 
 # Assignment Prompt:

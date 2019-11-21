@@ -2,7 +2,8 @@
 title: "ERHS535_HW_5"
 author: "Daniel Dean"
 date: "11/20/2019"
-output: html_document
+output:
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -53,8 +54,7 @@ omaha_tracts <- tracts("NE", county = "Douglas") %>%
 ```
 
 
-```{r plotting, fig.width = 10, fig.cap = "Map of Homicides in Omaha, NE (2007-2017) by investigation status (solved or unsolved). Colors indicate race of victim, and locations based on US Census tracts."}
-#Plotting:
+```{r include = FALSE}
 
 ggplot() + 
   geom_sf(data = omaha_tracts, fill = "white") + 
@@ -64,18 +64,27 @@ ggplot() +
   labs(title = "Omaha, NE Homicides (2007-2017)", subtitle = "Organized by Outcome and Location (US Census Tracts)", 
        fill = "Race of Victim") +
   theme_map() +
-  theme(legend.position = 'bottom', strip.text.x = element_text(size = 18, face = 'bold'))
+  theme(legend.position = 'top', strip.text.x = element_text(size = 15, face = 'bold'),
+        plot.title = element_text(size = 15, face = 'bold'))
+
+
+```
+
+```{r plotting}
+#Plotting:
 
 
 ggplot() + 
   geom_sf(data = omaha_tracts, fill = "white") + 
-  geom_sf(data = homicides_map_omaha, aes(fill = victim_race), shape = 23, color = 'black') +
+  geom_sf(data = homicides_map_omaha, aes(fill = victim_race), shape = 23, color = 'grey') +
   facet_wrap(.~disposition, nrow = 2) +
   scale_fill_tableau() +
-  labs(title = "Omaha, NE Homicides (2007-2017)", subtitle = "Organized by Outcome and Location (US Census Tracts)", 
+  labs(title = "Omaha, NE Homicides (2007-2017)",
+       subtitle = "Organized by Outcome and Location (US Census Tracts)", 
        fill = "Race of Victim") +
   theme_map() +
-  theme(legend.position = 'bottom', strip.text.x = element_text(size = 18, face = 'bold'))
+  theme(legend.position = 'bottom', strip.text.x = element_text(size = 15, face = 'bold'),
+        plot.title = element_text(size = 15, face = 'bold'))
 
 ```
 
