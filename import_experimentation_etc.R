@@ -9,14 +9,13 @@ library(tigris)
 
 
 
-homicides <- read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv")
-#write_csv(homicides, "data/homicides-data.csv") #writing local copy
-
-
-homicides %>%
-  mutate(reported_date = str_replace(string = reported_date, pattern = "201511018", replacement =  "20151018")) %>% #correcting apparent typos
-  mutate(reported_date = str_replace(string = reported_date, pattern = "201511105", replacement =  "20151018")) %>% #couldn't figure out in one step
-  mutate(reported_date = ymd(reported_date))
+homicides <- read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv") %>%
+  mutate(reported_date = str_replace(string = reported_date, pattern = "201511018", replacement =  "20151018"),
+         reported_date = str_replace(string = reported_date, pattern = "201511105", replacement =  "20151018"),
+         reported_date = ymd(reported_date)
+         ) %>% #correcting apparent typos before converting to date format
+  mutate_at(.vars = c('victim_race', 'victim_sex', 'city', 'state', 'disposition'), .funs = as.factor) %>%
+  mutate(victim_age = as.numeric(victim_age))
 
   
   

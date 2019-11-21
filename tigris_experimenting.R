@@ -58,6 +58,26 @@ ggplot() +
 
 # Moving on to making an sf object
 
-homicides_map_Omaha <- homicides %>%
+library(sf)
+
+homicides_map_omaha <- homicides %>%
   filter(city == "Omaha") %>%
-  set_as_sf()
+  st_as_sf(coords = c("lon","lat"))
+
+
+omaha_zip_codes <- tigris::zctas(starts_with = c("681"))
+
+
+st_bbox(omaha_zip_codes)
+plot(omaha_zip_codes)
+
+
+#geo_join(omaha_zip_codes, homicides_map_omaha, by_sp )
+
+
+
+ggplot() + 
+  geom_sf(data = omaha_zip_codes, color = "lightgray") + 
+  geom_sf(data = homicides_map_omaha, aes(color = month(begin_date_time),
+                                shape = time)) + 
+  scale_color_viridis(name = "Month") 
