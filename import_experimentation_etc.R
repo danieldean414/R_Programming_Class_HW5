@@ -5,6 +5,7 @@ library(readr)
 library(dplyr)
 library(lubridate)
 library(stringr)
+library(tigris)
 
 
 
