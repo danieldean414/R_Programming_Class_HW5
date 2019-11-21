@@ -62,10 +62,14 @@ library(sf)
 
 homicides_map_omaha <- homicides %>%
   filter(city == "Omaha") %>%
-  st_as_sf(coords = c("lon","lat"))
+  st_as_sf(coords = c("lon","lat")) %>%
+  st_set_crs(4269)
 
 
-omaha_zip_codes <- tigris::zctas(starts_with = c("681"))
+
+omaha_zip_codes <- tigris::zctas(starts_with = c("681")) 
+
+omaha_zip_codes_sf <- st_as_sf(omaha_zip_codes) %>% st_set_crs(4269)
 
 
 st_bbox(omaha_zip_codes)
@@ -74,10 +78,18 @@ plot(omaha_zip_codes)
 
 #geo_join(omaha_zip_codes, homicides_map_omaha, by_sp )
 
-
+library(viridis)
 
 ggplot() + 
-  geom_sf(data = omaha_zip_codes, color = "lightgray") + 
-  geom_sf(data = homicides_map_omaha, aes(color = month(begin_date_time),
-                                shape = time)) + 
+  geom_sf(data = omaha_zip_codes_sf, color = "lightgray") + 
+  geom_sf(data = homicides_map_omaha, aes(color = month(reported_date),
+                                shape = disposition)) + 
   scale_color_viridis(name = "Month") 
+
+ggplot() + 
+  geom_sf(data = omaha_zip_codes_sf, color = "lightgray") + 
+  geom_sf(data = homicides_map_omaha, aes(color = victim_race,
+                                          shape = disposition,
+                                          alpha = year(reported_date))) +
+  scale_shape_discrete()
+  

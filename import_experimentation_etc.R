@@ -6,6 +6,7 @@ library(dplyr)
 library(lubridate)
 library(stringr)
 library(tigris)
+library(forcats)
 
 
 
@@ -15,7 +16,11 @@ homicides <- read_csv("https://raw.githubusercontent.com/washingtonpost/data-hom
          reported_date = ymd(reported_date)
          ) %>% #correcting apparent typos before converting to date format
   mutate_at(.vars = c('victim_race', 'victim_sex', 'city', 'state', 'disposition'), .funs = as.factor) %>%
-  mutate(victim_age = as.numeric(victim_age))
+  mutate(victim_age = as.numeric(victim_age)) %>%
+  mutate(disposition = fct_collapse(disposition,
+                Solved = "Closed by arrest",
+               Unsolved = c("Closed without arrest","Open/No arrest")
+               ))
 
   
   
