@@ -3,6 +3,7 @@ title: "ERHS535_HW_5"
 author: "Daniel Dean"
 date: "11/20/2019"
 output:
+  pdf_document: default
   html_document: default
 ---
 
@@ -11,6 +12,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ```
 
 ```{r Data setup, include = FALSE}
+
 #Loading packages
 library(readr)
 library(dplyr)
@@ -42,6 +44,8 @@ homicides <- read_csv("https://raw.githubusercontent.com/washingtonpost/data-hom
 homicides_map_omaha <- homicides %>%
   filter(city == "Omaha") %>%
   mutate(victim_race = fct_lump(victim_race, n=4, other_level = "Other")) %>%
+  add_count(victim_race, name = "race_count") %>%
+  mutate(victim_race = fct_reorder(victim_race, .x = race_count, .desc = TRUE)) %>%
   st_as_sf(coords = c("lon","lat")) %>%
   st_set_crs(4269)
 
@@ -53,35 +57,19 @@ omaha_tracts <- tracts("NE", county = "Douglas") %>%
 
 ```
 
-
-```{r include = FALSE}
-
-ggplot() + 
-  geom_sf(data = omaha_tracts, fill = "white") + 
-  geom_sf(data = homicides_map_omaha, aes(fill = victim_race), shape = 23, color = 'black') +
-  facet_wrap(.~disposition, ncol = 2) +
-  scale_fill_tableau() +
-  labs(title = "Omaha, NE Homicides (2007-2017)", subtitle = "Organized by Outcome and Location (US Census Tracts)", 
-       fill = "Race of Victim") +
-  theme_map() +
-  theme(legend.position = 'top', strip.text.x = element_text(size = 15, face = 'bold'),
-        plot.title = element_text(size = 15, face = 'bold'))
-
-
-```
-
 ```{r plotting}
 #Plotting:
 
 
 ggplot() + 
   geom_sf(data = omaha_tracts, fill = "white") + 
-  geom_sf(data = homicides_map_omaha, aes(fill = victim_race), shape = 23, color = 'grey') +
+  geom_sf(data = homicides_map_omaha, aes(color = victim_race, fill=victim_race), shape = 18, size = 0.5, lw = 0) +
   facet_wrap(.~disposition, nrow = 2) +
+  scale_color_tableau(guide = FALSE) +
   scale_fill_tableau() +
   labs(title = "Omaha, NE Homicides (2007-2017)",
-       subtitle = "Organized by Outcome and Location (US Census Tracts)", 
-       fill = "Race of Victim") +
+       subtitle = "Investigation Outcome, Race, and Location (US Census Tracts)", 
+       color = "Race of Victim") +
   theme_map() +
   theme(legend.position = 'bottom', strip.text.x = element_text(size = 15, face = 'bold'),
         plot.title = element_text(size = 15, face = 'bold'))
