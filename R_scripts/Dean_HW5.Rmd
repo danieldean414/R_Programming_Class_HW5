@@ -6,6 +6,60 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ```
 
+```{r Data setup}
+#Loading packages
+library(readr)
+library(dplyr)
+library(lubridate)
+library(stringr)
+library(tigris)
+library(forcats)
+library(sf)
+
+#Importing homicide data from Washington Post, with pre-filtering
+
+homicides <- read_csv("https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv") %>%
+  mutate(reported_date = str_replace(string = reported_date, pattern = "201511018", replacement =  "20151018"),
+         reported_date = str_replace(string = reported_date, pattern = "201511105", replacement =  "20151018"),
+         reported_date = ymd(reported_date)
+         ) %>% #corrected two apparent typos (guessed correct month from order) before converting to date format
+  mutate_at(.vars = c('victim_race', 'victim_sex', 'city', 'state', 'disposition'), .funs = as.factor) %>%
+  mutate(victim_age = as.numeric(victim_age)) %>%
+  mutate(disposition = fct_collapse(disposition,
+                Solved = "Closed by arrest",
+               Unsolved = c("Closed without arrest","Open/No arrest")
+               ))
+
+#Limiting scope and converting to sf object
+
+homicides_map_omaha <- homicides %>%
+  filter(city == "Omaha") %>%
+  mutate(victim_race = fct_lump(victim_race, n=4, other_level = "Other")) %>%
+  st_as_sf(coords = c("lon","lat")) %>%
+  st_set_crs(4269)
+
+#Importing ZIP code boundaries:
+
+omaha_zip_codes <- tigris::zctas(starts_with = c("681"), tigris_use_cache = TRUE) %>%
+  st_as_sf(omaha_zip_codes) %>% st_set_crs(4269) #All Omaha zip codes start with 681, but this also brings in a few non-Omaha zip codes to the south; wonder if it takes a vector instead?
+
+```
+
+
+```{r}
+#Plotting:
+
+ggplot() + 
+  geom_sf(data = omaha_zip_codes_sf) + 
+  geom_sf(data = homicides_map_omaha, aes(fill = victim_race, color = victim_race)) +
+  facet_wrap(.~disposition) +
+  labs(title = "Omaha, NE (2007-2015) Homicides", subtitle = "Outcome and Location", color = "Race of Victim" +
+  theme_tufte()
+
+```
+
+
+```

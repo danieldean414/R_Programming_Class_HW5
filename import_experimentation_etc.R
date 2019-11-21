@@ -7,6 +7,7 @@ library(lubridate)
 library(stringr)
 library(tigris)
 library(forcats)
+library(sf)
 
 
 
@@ -21,6 +22,7 @@ homicides <- read_csv("https://raw.githubusercontent.com/washingtonpost/data-hom
                 Solved = "Closed by arrest",
                Unsolved = c("Closed without arrest","Open/No arrest")
                ))
+
 
   
   
