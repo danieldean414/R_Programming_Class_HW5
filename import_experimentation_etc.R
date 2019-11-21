@@ -34,5 +34,6 @@ omaha_zip_codes <- tigris::zctas(starts_with = c("681"), tigris_cache_dir("data/
 
 #All Omaha zip codes start with 681, but this also brings in a few non-Omaha zip codes to the south
 
+omaha_blocks <- block_groups()
   
   

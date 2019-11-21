@@ -87,7 +87,8 @@ ggplot() +
   geom_sf(data = omaha_zip_codes_sf, color = "lightgray") + 
   geom_sf(data = homicides_map_omaha, aes(color = month(reported_date),
                                 shape = disposition)) + 
-  scale_color_viridis(name = "Month") 
+  scale_color_viridis(name = "Month") +
+  theme_map()
 
 library(plotly)
 ggplot() + 
@@ -125,21 +126,24 @@ ggplot() +
 
 
 omaha_tracts <- tracts("NE", county = "Douglas") %>% st_as_sf() %>%  st_set_crs(4269)
-omaha_roads <- roads("NE","Douglas") %>% st_as_sf() %>% 
+omaha_roads <- roads("NE","Douglas") %>% st_as_sf()
 
-#omaha_blocks <- block_groups("NE", county = c("Douglas","Sarpy"))
+  
+  
+omaha_blocks <- block_groups("NE", county = c("Douglas","Sarpy"))
+
 
 ggplot() +
   geom_sf(omaha_tracts, aes(fill = 'goldenrod'))
 
 
 ggplot() + 
-  geom_sf(data = omaha_tracts) + 
-  geom_sf(data = homicides_map_omaha, aes(fill = victim_race), shape = 23, color = 'white') +
+  geom_sf(data = omaha_tracts, fill = "wheat1") + 
+  geom_sf(data = homicides_map_omaha, aes(fill = victim_race), shape = 23, color = 'black') +
   facet_wrap(.~disposition, nrow = 2) +
-  scale_fill_viridis_d() +
-  labs(title = "Omaha, NE (2007-2015) Homicides", subtitle = "Outcome and Location", color = "Race of Victim", xlab = "Longitude", ylab = "Latitude") +
-  theme_tufte()
+  scale_fill_tableau() +
+  labs(title = "Omaha, NE Homicides (2007-2017)", subtitle = "Organized by Outcome and Location (US Census Tracts)", fill = "Race of Victim") +
+  theme_map()
 
 
 ggplot() + 

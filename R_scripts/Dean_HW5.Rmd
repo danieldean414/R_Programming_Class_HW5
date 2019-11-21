@@ -9,15 +9,18 @@ output: html_document
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ```
 
-```{r Data setup}
+```{r Data setup, include = FALSE}
 #Loading packages
 library(readr)
 library(dplyr)
 library(lubridate)
 library(stringr)
+library(ggplot2)
 library(tigris)
 library(forcats)
 library(sf)
+library(ggthemes)
+
 
 #Importing homicide data from Washington Post, with pre-filtering
 
@@ -41,25 +44,38 @@ homicides_map_omaha <- homicides %>%
   st_as_sf(coords = c("lon","lat")) %>%
   st_set_crs(4269)
 
-#Importing ZIP code boundaries:
+#Importing census tracts:
+omaha_tracts <- tracts("NE", county = "Douglas") %>%
+  st_as_sf() %>%  
+  st_set_crs(4269)
 
-omaha_zip_codes <- tigris::zctas(starts_with = c("681")) %>%
-  st_as_sf(omaha_zip_codes) %>% st_set_crs(4269) #All Omaha zip codes start with 681, but this also brings in a few non-Omaha zip codes to the south; wonder if it takes a vector instead?
 
 ```
 
 
-```{r}
+```{r plotting, fig.width = 10, fig.cap = "Map of Homicides in Omaha, NE (2007-2017) by investigation status (solved or unsolved). Colors indicate race of victim, and locations based on US Census tracts."}
 #Plotting:
 
 ggplot() + 
-  geom_sf(data = omaha_zip_codes_sf) + 
-  geom_sf(data = homicides_map_omaha, aes(fill = victim_race, color = victim_race)) +
-  facet_wrap(.~disposition) +
-  labs(title = "Omaha, NE (2007-2015) Homicides", subtitle = "Outcome and Location", color = "Race of Victim" +
-  theme_tufte()
+  geom_sf(data = omaha_tracts, fill = "white") + 
+  geom_sf(data = homicides_map_omaha, aes(fill = victim_race), shape = 23, color = 'black') +
+  facet_wrap(.~disposition, ncol = 2) +
+  scale_fill_tableau() +
+  labs(title = "Omaha, NE Homicides (2007-2017)", subtitle = "Organized by Outcome and Location (US Census Tracts)", 
+       fill = "Race of Victim") +
+  theme_map() +
+  theme(legend.position = 'bottom', strip.text.x = element_text(size = 18, face = 'bold'))
+
+
+ggplot() + 
+  geom_sf(data = omaha_tracts, fill = "white") + 
+  geom_sf(data = homicides_map_omaha, aes(fill = victim_race), shape = 23, color = 'black') +
+  facet_wrap(.~disposition, nrow = 2) +
+  scale_fill_tableau() +
+  labs(title = "Omaha, NE Homicides (2007-2017)", subtitle = "Organized by Outcome and Location (US Census Tracts)", 
+       fill = "Race of Victim") +
+  theme_map() +
+  theme(legend.position = 'bottom', strip.text.x = element_text(size = 18, face = 'bold'))
 
 ```
 
-
-```
