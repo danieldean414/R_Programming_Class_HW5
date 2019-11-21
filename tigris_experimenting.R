@@ -62,6 +62,7 @@ library(sf)
 
 homicides_map_omaha <- homicides %>%
   filter(city == "Omaha") %>%
+  mutate(victim_race = fct_lump(victim_race, n=4, other_level = "Other")) %>%
   st_as_sf(coords = c("lon","lat")) %>%
   st_set_crs(4269)
 
@@ -79,6 +80,7 @@ plot(omaha_zip_codes)
 #geo_join(omaha_zip_codes, homicides_map_omaha, by_sp )
 
 library(viridis)
+library(ggthemes)
 
 ggplot() + 
   geom_sf(data = omaha_zip_codes_sf, color = "lightgray") + 
@@ -87,9 +89,9 @@ ggplot() +
   scale_color_viridis(name = "Month") 
 
 ggplot() + 
-  geom_sf(data = omaha_zip_codes_sf, color = "lightgray") + 
-  geom_sf(data = homicides_map_omaha, aes(color = victim_race,
-                                          shape = disposition,
-                                          alpha = year(reported_date))) +
-  scale_shape_discrete()
+  geom_sf(data = omaha_zip_codes_sf) + 
+  geom_sf(data = homicides_map_omaha, aes(fill = victim_race, color = victim_race)) +
+  facet_wrap(.~disposition) +
+  labs(title = "Omaha, NE (2007-2015) Homicides", subtitle = "Outcome and Location", color = "Race of Victim", xlab = "Longitude", ylab = "Latitude") +
+  theme_tufte()
   
